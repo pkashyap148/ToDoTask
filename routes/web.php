@@ -24,4 +24,10 @@ Route::match(['get','post'],'/','App\Http\Controllers\ListController@index');
 Route::post('/','App\Http\Controllers\ListController@store');
 // Route::view('/','list.index');
 Route::get('/','App\Http\Controllers\ListController@index');
-Route::get('/{task_id}',[ListController::class,'delete']);
+Route::post('/{task_id}',[ListController::class,'delete']);
+Route::post('/{task_id}/{newTask}', [ListController::class, 'editTask']);
+Route::post('/{task_id}/status/{status}', [ListController::class, 'status']);
+Route::post('/{task_id}/priority/{priority}', [ListController::class, 'priority']);
+
+
+

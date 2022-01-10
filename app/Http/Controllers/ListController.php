@@ -26,7 +26,7 @@ class ListController extends Controller
         //$tasks = tasks::all();
         //$tasks = DB::table('tasks')->select('task_id','task_name','DATE_FORMAT(created, "%d/%m/%Y")')->where('isActive','1')->get();
         $tasks = DB::table('tasks')
-                     ->select(DB::raw('task_id,task_name,created'))
+                     ->select(DB::raw('task_id,task_name,created,status'))
                      ->where('isActive', '=', '1')
                      ->get();
         return view('list.index')->with('tasks',$tasks);
@@ -52,12 +52,17 @@ class ListController extends Controller
     {
 
          $x = $request->get('task_name');
-         print_r($x);
+         //print_r(html_entity_decode($x));
          
          //return response()->json($x);
         $add = new Task;
         $add->task_name = $request->task_name;
         $add->save();
+        $tasks = DB::table('tasks')
+                     ->select(DB::raw('task_id,task_name,created,status'))
+                     ->where('isActive', '=', '1')
+                     ->get();
+        return $tasks;
         //return response()->json(['success'=>'success']);
         //return view('list.index');
         //return $request->all();
@@ -65,10 +70,50 @@ class ListController extends Controller
     }
 
     public function delete(Request $del){
-        return ;
+        $task_id = $del->get('task_id');
+        $delete_task = DB::table('tasks')
+                           ->where('task_id',$task_id)
+                           ->update(['isActive'=>'0', 'isDelete'=>'1']);
+        $tasks = DB::table('tasks')
+                           ->select(DB::raw('task_id,task_name,created,status'))
+                           ->where('isActive', '=', '1')
+                           ->get();
+        return $tasks;
         
     }
 
+    public function editTask($id, $newTask){
+        $update_task = DB::table('tasks')
+            ->where('task_id', $id)
+            ->update(['task_name' => $newTask]);
+        $tasks = DB::table('tasks')
+            ->select(DB::raw('task_id,task_name,created,status'))
+            ->where('isActive', '=', '1')
+            ->get();
+        return $tasks;
+    }
+
+    public function status($id, $status){
+        $status = DB::table('tasks')
+            ->where('task_id', $id)
+            ->update(['status' => $status]);
+        $tasks = DB::table('tasks')
+            ->select(DB::raw('task_id,task_name,created,status'))
+            ->where('isActive', '=', '1')
+            ->get();
+        return $tasks;
+    }
+
+    public function priority($id, $priority){
+        $prior_task = DB::table('tasks')
+            ->where('task_id', $id)
+            ->update(['prority' => $priority]);
+        $tasks = DB::table('tasks')
+            ->select(DB::raw('task_id,task_name,created,status,prority'))
+            ->where('isActive', '=', '1')
+            ->get();
+        return $tasks;
+    }
     /**
      * Display the specified resource.
      *
